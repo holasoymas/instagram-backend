@@ -6,6 +6,7 @@ const PORT = process.env.PORT || 5000;
 import cors from "cors";
 import userProfileRoute from "./routes/userProfileRoute.js";
 import userRoute from "./routes/userRoutes.js";
+import postRoute from "./routes/postRouts.js";
 
 const app = express();
 
@@ -14,12 +15,13 @@ connectDB();
 app.use(express.json());
 app.use(cors());
 
-app.get("/", (req, res) => {
-  res.send("<h1>Hello world</h1>");
-});
+// app.get("/", (req, res) => {
+//   res.send("<h1>Hello world</h1>");
+// });
 
 app.use("/", userProfileRoute);
 app.use("/api/user", userRoute);
+app.use("/api/post", postRoute);
 
 app.listen(PORT, () => {
   console.log(`Listening on port ${PORT}`);

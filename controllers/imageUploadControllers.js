@@ -9,6 +9,6 @@ export const uploadImage = async (req, res) => {
       url: uploadResult.secure_url,
     });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ msg: "Error while uplaiding file" });
   }
 };

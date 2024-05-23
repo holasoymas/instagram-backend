@@ -1,6 +1,5 @@
 import User from "../models/userModel.js";
-import { getTokenFrom } from "../utils/formatAuthHeader.js";
-import { generateToken, verifyToken } from "../utils/tokensUtils.js";
+import { generateToken } from "../utils/tokensUtils.js";
 
 export const createUser = async (req, res) => {
   try {
@@ -32,36 +31,45 @@ export const createUser = async (req, res) => {
   }
 }
 
+export const loginUser = async (req, res) => {
+  const { username, password } = req.body;
+  console.log("hello login route");
+  console.log(username + password);
+  try {
+    const user = await User.findOne({ username });
+    if (!user) return res.status(404).json({ msg: "User not found" });
+    console.log("THis is user", user);
+    if (user.password !== password) {
+      return res.status(401).json({ msg: "Invalid Credintials" });
+    }
+
+    const payload = { username, password };
+    const token = generateToken(payload);
+    // Fix this
+    console.log(user);
+    console.log(token);
+    return res.status(200).json({ user, token });
+
+  } catch (err) {
+    console.error("Something wrong with the server " + err);
+  }
+}
+
 export const getUser = async (req, res) => {
   const username = req.params.username;
 
   try {
-    const user = await User.findOne({ username });
-    if (!user) {
-      return res.status(404).json({ msg: "User not found" });
-    }
+    const user = await User.findOne({ username }).populate("posts");
+    if (!user) return res.status(404).json({ msg: "User not found" });
+    // Add a flag to indicate whether the authenticated user is the profile owner
+    const isOwner = req.isOwner;
 
-    // Get token from request
-    const decodedToken = getTokenFrom(req);
-    console.log(decodedToken);
-    // Verify token and get user information
-    const validUser = verifyToken(decodedToken);
-    console.log(validUser);
     // Check if user is authenticated
-    if (!validUser) {
+    if (!user) {
       return res.status(401).json({ msg: "Unauthenticated user" });
     }
 
-    // Check if the authenticated user is the owner of the profile
-    if (validUser.username !== username) {
-      console.log("got this part");
-      return res.status(403).json({ user, msg: "Unauthorized user" });
-    }
-
-    // Add a flag to indicate whether the authenticated user is the profile owner
-    const isOwner = true;
-
-    // Include the isOwner flag in the response data
+    // Include the isOwner flag in the response data if the user is authorized or not 
     return res.status(200).send({ user, isOwner });
   } catch (err) {
     console.error(err.message);
