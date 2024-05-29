@@ -1,3 +1,4 @@
+import Post from "../models/postsModel.js";
 import User from "../models/userModel.js";
 import { generateToken } from "../utils/tokensUtils.js";
 
@@ -76,4 +77,15 @@ export const getUser = async (req, res) => {
     return res.status(500).json({ msg: "Server error" });
   }
 };
+
+export const getUserPosts = async (req, res) => {
+  try {
+    const randomPosts = await Post.aggregate([{ $sample: { size: 5 } }]);
+    return res.status(200).json(randomPosts);
+  } catch (err) {
+    console.error(err.message);
+    return res.status(500).json({ msg: "Server Error" });
+  }
+}
+
 

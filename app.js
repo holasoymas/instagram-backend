@@ -23,6 +23,7 @@ app.use("/", userProfileRoute);
 app.use("/api/user", userRoute);
 app.use("/api/post", postRoute);
 
+
 app.listen(PORT, () => {
   console.log(`Listening on port ${PORT}`);
 });
