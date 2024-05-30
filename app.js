@@ -15,9 +15,9 @@ connectDB();
 app.use(express.json());
 app.use(cors());
 
-// app.get("/", (req, res) => {
-//   res.send("<h1>Hello world</h1>");
-// });
+ app.get("/", (req, res) => {
+   res.send("<h1>Hello world</h1>");
+ });
 
 app.use("/", userProfileRoute);
 app.use("/api/user", userRoute);
